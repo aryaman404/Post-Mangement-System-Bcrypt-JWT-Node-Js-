@@ -17,6 +17,10 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
+app.get("/profile", isLoggedIn, (req, res) => {
+  console.log(req.user);
+  res.render("login");
+});
 
 app.post("/register", async (req, res) => {
   let { email, username, password, age, name } = req.body;
@@ -59,6 +63,15 @@ app.get("/logout", (req, res) => {
   res.cookie("token", "");
   res.redirect("/login");
 });
+
+function isLoggedIn(req, res, next) {
+  if (req.cookie.token === "") res.send("you must logged In");
+  else {
+    let data = jwt.verify(req.cookie.token, "shshsh");
+    req.user = data;
+    next();
+  }
+}
 app.listen(3000, () => {
   console.log("server is running");
 });
